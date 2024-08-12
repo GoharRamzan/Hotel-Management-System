@@ -1,24 +1,90 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
+import Rooms from './pages/Rooms';
+import Bookings from './pages/Bookings';
+import Customers from './pages/Customers';
+import Staff from './pages/Staff';
+import Payments from './pages/Payments';
+import Reports from './pages/Reports';
+import Sidebar from './components/Sidebar';
+import { getAuth } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from './firebase';
 
 function App() {
+  const [user, setUser] = React.useState(null);
+  const [userRole, setUserRole] = React.useState(null);
+  const auth = getAuth();
+
+  React.useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUser(user);
+        const userDoc = doc(db, 'users', user.uid);
+        const docSnap = await getDoc(userDoc);
+        if (docSnap.exists()) {
+          setUserRole(docSnap.data().role);
+        }
+      } else {
+        setUser(null);
+        setUserRole(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [auth]);
+
+  if (user === null) {
+    return (
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </Router>
+    );
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="flex h-screen">
+        <Sidebar userRole={userRole} />
+        <div className="flex-1 md:ml-64 p-4 bg-gray-100">
+          <Routes>
+            {userRole === 'admin' && (
+              <>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/rooms" element={<Rooms />} />
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="/customers" element={<Customers />} />
+                <Route path="/staff" element={<Staff />} />
+                <Route path="/payments" element={<Payments />} />
+                <Route path="/reports" element={<Reports />} />
+              </>
+            )}
+            {userRole === 'staff' && (
+              <>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/rooms" element={<Rooms />} />
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="*" element={<Navigate to="/dashboard" />} />
+              </>
+            )}
+            {userRole === 'user' && (
+              <>
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="/payments" element={<Payments />} />
+                <Route path="*" element={<Navigate to="/bookings" />} />
+              </>
+            )}
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
 
