@@ -83,10 +83,10 @@ const Sidebar = ({ userRole }) => {
   return (
     <>
       {/* Sidebar toggle button for small screens */}
-      <div className="md:hidden fixed top-0 left-0 p-4 z-50 bg-blue-900 text-white">
+      <div className="fixed top-0 left-0  h-10  z-50 bg-blue-900 text-white md:hidden">
         <button
           onClick={toggleSidebar}
-          className="p-2 rounded-md focus:outline-none"
+          className="p-2  rounded-md focus:outline-none"
         >
           {isOpen ? (
             <XMarkIcon className="w-6 h-6" />
@@ -114,7 +114,7 @@ const Sidebar = ({ userRole }) => {
 
         {/* Logo at the top */}
         <div className="flex items-center justify-center h-32">
-          <img src={logo} alt="Logo" className="h-40 w-auto" />
+          <img src={logo} alt="Logo" className="h-20 w-auto" />
         </div>
 
         <nav className="flex flex-col h-full">
