@@ -1,4 +1,3 @@
-// src/components/Sidebar.js
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { getAuth, signOut } from 'firebase/auth';
@@ -63,7 +62,7 @@ const Sidebar = ({ userRole }) => {
     }
   };
 
-  const NavItem = ({ to, icon, label }) => (
+  const NavItem = ({ to, icon, label, onClick }) => (
     <li>
       <NavLink
         to={to}
@@ -72,7 +71,7 @@ const Sidebar = ({ userRole }) => {
             ? 'block py-2 px-4 rounded bg-black text-yellow-300'
             : 'block py-2 px-4 rounded hover:bg-black transition-colors duration-200'
         }
-        onClick={closeSidebar}
+        onClick={onClick}
       >
         {icon}
         {label}
@@ -83,10 +82,10 @@ const Sidebar = ({ userRole }) => {
   return (
     <>
       {/* Sidebar toggle button for small screens */}
-      <div className="fixed top-0 left-0  h-10  z-50 bg-blue-900 text-white md:hidden">
+      <div className="fixed top-0 left-0 h-10 z-50 bg-blue-900 text-white md:hidden">
         <button
           onClick={toggleSidebar}
-          className="p-2  rounded-md focus:outline-none"
+          className="p-2 rounded-md focus:outline-none"
         >
           {isOpen ? (
             <XMarkIcon className="w-6 h-6" />
@@ -98,12 +97,11 @@ const Sidebar = ({ userRole }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed inset-0 w-2/3 md:w-64 bg-stone-700 text-white transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full'
-          } md:translate-x-0 md:flex flex-col h-full z-40`}
+        className={`fixed inset-0 w-2/3 md:w-64 bg-stone-700 text-white transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:flex flex-col h-full`}
         style={{ zIndex: 1000 }}
       >
         <div className="flex items-center justify-between p-4 md:hidden">
-          <h2 className="text-lg font-bold ">Sidebar</h2>
+          <h2 className="text-lg font-bold">Sidebar</h2>
           <button
             onClick={closeSidebar}
             className="p-2 rounded-md focus:outline-none"
@@ -113,21 +111,34 @@ const Sidebar = ({ userRole }) => {
         </div>
 
         {/* Logo at the top */}
-        <div className="flex items-center justify-center h-32">
-          <img src={logo} alt="Logo" className="h-20 w-auto" />
+        <div className="flex items-center justify-center h-24">
+          <img src={logo} alt="Logo" className="h-16 w-auto" />
         </div>
 
         <nav className="flex flex-col h-full">
           <ul className="flex-1 p-4 space-y-2">
             {renderNavLinks()}
+            {/* Logout Button in Mobile and Large Screens */}
+            <li className={`md:hidden mb-4`}>
+              <button
+                onClick={handleLogout}
+                className="w-full py-2 bg-red-600 flex justify-center items-center hover:bg-red-700 text-white rounded focus:outline-none transition-colors duration-200"
+              >
+                <ArrowLeftEndOnRectangleIcon className="h-6 w-6 text-white" />
+                <span className="ml-2">Logout</span>
+              </button>
+            </li>
           </ul>
-          <button
-            onClick={handleLogout}
-            className="w-full py-2 bg-red-600 flex justify-center items-center hover:bg-red-700 text-white rounded-b focus:outline-none transition-colors duration-200"
-          >
-            <ArrowLeftEndOnRectangleIcon className="h-6 w-6 text-white" />
-            <span className="ml-2">Logout</span>
-          </button>
+          {/* Logout Button in Large Screens */}
+          <div className="hidden md:flex flex-shrink-0 p-4">
+            <button
+              onClick={handleLogout}
+              className="w-full py-2 bg-red-600 flex justify-center items-center hover:bg-red-700 text-white rounded focus:outline-none transition-colors duration-200"
+            >
+              <ArrowLeftEndOnRectangleIcon className="h-6 w-6 text-white" />
+              <span className="ml-2">Logout</span>
+            </button>
+          </div>
         </nav>
       </div>
 
